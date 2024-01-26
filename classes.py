@@ -1,3 +1,6 @@
+import pdb
+
+
 def run_step(*args, **kwargs):
     from clearml import Task
     import pickle
@@ -61,9 +64,11 @@ class TestStep:
                 suffix_no += 1
         task.upload_artifact('inputs/self', self, wait_on_upload=True)
 
-        task.update_task(task_data={
-            'script': task.data.script.to_dict().update(
-                {'entry_point': "run_step.py", 'working_dir': '.', 'diff': diff})})
+        script_data = task.data.script.to_dict()
+        script_data['entry_point'] = "run_step.py"
+        script_data['working_dir'] = "."
+        script_data['diff'] = diff
+        task.update_task(task_data={'script': script_data})
 
         if queue is not None:
             clearml.Task.enqueue(task, queue_name=queue)
