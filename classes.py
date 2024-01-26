@@ -65,8 +65,6 @@ class TestStep:
             'script': task.data.script.to_dict().update(
                 {'entry_point': "run_step.py", 'working_dir': '.', 'diff': diff})})
 
-        task.set_script(entry_point="run_step.py")
-
         if queue is not None:
             clearml.Task.enqueue(task, queue_name=queue)
         os.unlink("run_step.py")
