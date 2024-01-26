@@ -44,6 +44,9 @@ class TestStep:
             f.write("    task.connect(kwargs, name='kwargs')\n")
             f.write("    run_step(**kwargs)")
 
+        with open("run_step.py") as f:
+            diff = f.read()
+
         suffix_no = 0
         while True:
             try:
@@ -58,9 +61,14 @@ class TestStep:
                 suffix_no += 1
         task.upload_artifact('inputs/self', self, wait_on_upload=True)
 
+        task.update_task(task_data={
+            'script': task.data.script.to_dict().update(
+                {'entry_point': "run_step.py", 'working_dir': '.', 'diff': diff})})
+
         task.set_script(entry_point="run_step.py")
 
         if queue is not None:
             clearml.Task.enqueue(task, queue_name=queue)
+        os.unlink("run_step.py")
 
         return task
