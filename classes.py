@@ -1,5 +1,3 @@
-import pdb
-
 
 def run_step(*args, **kwargs):
     from clearml import Task
@@ -24,7 +22,7 @@ class TestStep:
     def __init__(self, foo=None):
         self.foo = foo
 
-    def _run(self, **kwargs):
+    def run(self, **kwargs):
         print(kwargs)
         print(self.foo)
         return self.foo
@@ -37,8 +35,8 @@ class TestStep:
 
         with open("run_step.py", "w") as f:
             # TODO: What about additional helper functions etc?
-            f.write("from clearml import Task\n")
-            f.write(dill.source.getsource(self.__class__))
+            f.write("from clearml import Task\n\n")
+            f.write(dill.source.getsource(self.__class__))  # TODO: Remove the create_task method?
             f.write(dill.source.getsource(run_step))
             f.write("\n\n")
             f.write("if __name__ == '__main__':\n")
@@ -58,7 +56,6 @@ class TestStep:
                                            script="run_step.py", add_task_init_call=False, packages=True)
                 break
             except ValueError as e:
-                print(e)
                 if not suffix_no:
                     suffix_no = 1
                 suffix_no += 1
