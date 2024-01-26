@@ -1,18 +1,20 @@
 def run_step(*args, **kwargs):
     from clearml import Task
     import pickle
+    from pathlib import Path
+
     task = Task.current_task()
     instance = task.artifacts['inputs/self'].get()
-    print(instance)
-    # instance is a posix path to a pickled file
-    try:
-        with open(instance) as f:
-            instance = pickle.load(f)
-    except UnicodeDecodeError:
-        with open(instance, "rb") as f:
-            instance = pickle.load(f)
-    print(instance)
+    if isinstance(instance, Path):
+        # instance might be a posix path to a pickled file
+        try:
+            with open(instance) as f:
+                instance = pickle.load(f)
+        except UnicodeDecodeError:
+            with open(instance, "rb") as f:
+                instance = pickle.load(f)
     return instance.run(*args, **kwargs)
+
 
 class TestStep:
 
@@ -24,7 +26,9 @@ class TestStep:
         print(self.foo)
         return self.foo
 
+    # TODO: Make a wrapper
     def create_task(self, project_name):
+        import os
         import clearml
         import dill
 
@@ -55,5 +59,6 @@ class TestStep:
         task.upload_artifact('inputs/self', self, wait_on_upload=True)
 
         task.set_script(entry_point="run_step.py")
+        os.unlink("run_step.py")
 
         return task
