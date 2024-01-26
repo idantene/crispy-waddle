@@ -27,7 +27,7 @@ class TestStep:
         return self.foo
 
     # TODO: Make a wrapper
-    def create_task(self, project_name):
+    def create_task(self, project_name, queue=None):
         import os
         import clearml
         import dill
@@ -59,6 +59,9 @@ class TestStep:
         task.upload_artifact('inputs/self', self, wait_on_upload=True)
 
         task.set_script(entry_point="run_step.py")
-        os.unlink("run_step.py")
+
+        if queue is not None:
+            clearml.Task.enqueue(task, queue=queue)
+            os.unlink("run_step.py")
 
         return task
