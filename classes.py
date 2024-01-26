@@ -45,8 +45,7 @@ class TestStep:
             try:
                 suffix = "" if not suffix_no else f"_{suffix_no}"
                 task = clearml.Task.create(project_name=project_name, task_name=self.__class__.__name__ + suffix,
-                                           script="run_step.py", add_task_init_call=False, packages=True,
-                                           repo=__file__)
+                                           script="run_step.py", add_task_init_call=False, packages=True)
                 break
             except ValueError as e:
                 print(e)
