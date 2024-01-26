@@ -62,6 +62,5 @@ class TestStep:
 
         if queue is not None:
             clearml.Task.enqueue(task, queue_name=queue)
-            os.unlink("run_step.py")
 
         return task
